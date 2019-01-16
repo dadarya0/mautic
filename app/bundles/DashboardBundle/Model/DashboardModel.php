@@ -18,9 +18,8 @@ use Mautic\DashboardBundle\Event\WidgetDetailEvent;
 use Mautic\DashboardBundle\Form\Type\WidgetType;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Mautic\DashboardBundle\Widget\WidgetDetailEventFactory;
 use Symfony\Component\Filesystem\Exception\IOException;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -33,7 +32,7 @@ class DashboardModel extends FormModel
     public function __construct(
         CoreParametersHelper $coreParametersHelper,
         private PathsHelper $pathsHelper,
-        private Filesystem $filesystem,
+        private WidgetDetailEventFactory $eventFactory,
         private RequestStack $requestStack,
         EntityManagerInterface $em,
         CorePermissions $security,
