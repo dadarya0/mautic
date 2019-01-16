@@ -117,6 +117,7 @@
 !/plugins/MauticTagManagerBundle
 !/plugins/index.html
 !/plugins/.gitkeep
+plugins.json
 
 /themes/*
 !/themes/aurora
@@ -141,3 +142,4 @@
 !/themes/blank-big.png
 
 /translations
+
