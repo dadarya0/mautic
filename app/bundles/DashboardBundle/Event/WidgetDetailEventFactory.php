@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-namespace Mautic\DashboardBundle\Widget;
+namespace Mautic\DashboardBundle\Event;
 
 use Mautic\CacheBundle\Cache\CacheProvider;
 use Mautic\CoreBundle\Helper\UserHelper;
@@ -59,11 +59,19 @@ class WidgetDetailEventFactory
         $this->userHelper      = $userHelper;
     }
 
+    /**
+     * @param Widget      $widget
+     * @param string|null $cacheId
+     *
+     * @return \Mautic\DashboardBundle\Event\WidgetDetailEvent
+     */
     public function create(Widget $widget, ?string $cacheId)
     {
         $event = new WidgetDetailEvent($this->translator, $this->cacheProvider);
         $event->setWidget($widget);
         $event->setCacheDir(false, $this->userHelper->getUser()->getId());
         $event->setSecurity($this->corePermissions);
+
+        return $event;
     }
 }

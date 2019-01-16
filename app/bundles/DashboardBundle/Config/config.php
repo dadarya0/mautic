@@ -50,10 +50,11 @@ return [
                 ],
             ],
             'mautic.dashboard.widget_detail.event.factory' => [
-                'class'     => \Mautic\DashboardBundle\Widget\WidgetDetailEventFactory::class,
+                'class'     => \Mautic\DashboardBundle\Event\WidgetDetailEventFactory::class,
                 'arguments' => [
                     'translator',
                     'mautic.cache.provider',
+                    'mautic.security',
                     'mautic.helper.user',
                 ],
             ],

@@ -13,12 +13,11 @@ use Mautic\CoreBundle\Security\Permissions\CorePermissions;
 use Mautic\CoreBundle\Translation\Translator;
 use Mautic\DashboardBundle\DashboardEvents;
 use Mautic\DashboardBundle\Entity\Widget;
+use Mautic\DashboardBundle\Event\WidgetDetailEventFactory;
 use Mautic\DashboardBundle\Entity\WidgetRepository;
-use Mautic\DashboardBundle\Event\WidgetDetailEvent;
 use Mautic\DashboardBundle\Form\Type\WidgetType;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Mautic\DashboardBundle\Widget\WidgetDetailEventFactory;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -205,10 +204,8 @@ class DashboardModel extends FormModel
 
         $widget->setParams($resultParams);
 
-        $event = new WidgetDetailEvent($this->translator);
-        $event->setWidget($widget);
-        $event->setCacheDir($cacheDir, $this->userHelper->getUser()->getId());
-        $event->setSecurity($this->security);
+        $event = $this->eventFactory->create($widget, $this->userHelper->getUser()->getId());
+
         $this->dispatcher->dispatch($event, DashboardEvents::DASHBOARD_ON_MODULE_DETAIL_GENERATE);
     }
 

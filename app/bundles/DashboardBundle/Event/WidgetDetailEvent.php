@@ -34,6 +34,7 @@ class WidgetDetailEvent extends CommonEvent
 
     protected $loadTime  = 0;
 
+    /** @var string prefix for cache path */
     private $cacheKeyPath = 'dashboard.widget.';
 
     /**
@@ -46,12 +47,19 @@ class WidgetDetailEvent extends CommonEvent
         $this->startTime     = microtime(true);
     }
 
+    /**
+     * Checks for cache type. This event should be created by factory thus not legacy approach.
+     *
+     * @return bool
+     */
     private function usesLegacyCache()
     {
         return is_null($this->cacheProvider);
     }
 
     /**
+     * Return unique key, uses legacy methods for BC.
+     *
      * @return string
      */
     public function getCacheKey()
@@ -195,7 +203,9 @@ class WidgetDetailEvent extends CommonEvent
         }
 
         $cItem = $this->cacheProvider->getItem($this->getCacheKey());
-        $cItem->expiresAfter($this->widget->getCacheTimeout());
+        if ($this->widget->getCacheTimeout()) {
+            $cItem->expiresAfter((int) $this->widget->getCacheTimeout() * 60);  // This is in minutes
+        }
         $cItem->set($templateData);
 
         return $this->cacheProvider->save($cItem);
@@ -281,7 +291,15 @@ class WidgetDetailEvent extends CommonEvent
             return false;
         }
 
-        return ($this->cacheProvider->getItem($this->getCacheKey()))->isHit();
+        $cachedItem = $this->cacheProvider->getItem($this->getCacheKey());
+        if (!$cachedItem->isHit()) {
+            return false;
+        }
+
+        $this->widget->setCached(true);
+        $this->setTemplateData($cachedItem->get());
+
+        return true;
     }
 
     /**
