@@ -25,19 +25,19 @@ use Symfony\Component\Translation\TranslatorInterface;
 class LeadImportFieldType extends AbstractType
 {
     /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
-    /**
      * @var EntityManager
      */
     private $entityManager;
 
-    public function __construct(TranslatorInterface $translator, EntityManager $entityManager)
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(EntityManager $entityManager, TranslatorInterface $translator)
     {
-        $this->translator    = $translator;
         $this->entityManager = $entityManager;
+        $this->translator    = $translator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -63,7 +63,7 @@ class LeadImportFieldType extends AbstractType
         }
 
         $transformer = new IdToEntityModelTransformer(
-            $this->enityManager,
+            $this->entityManager,
             'MauticUserBundle:User'
         );
 
