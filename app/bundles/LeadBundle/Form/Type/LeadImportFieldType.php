@@ -62,7 +62,10 @@ class LeadImportFieldType extends AbstractType
             );
         }
 
-        $transformer = new IdToEntityModelTransformer($this->entityManager, User::class);
+        $transformer = new IdToEntityModelTransformer(
+            $this->enityManager,
+            'MauticUserBundle:User'
+        );
 
         $builder->add(
             $builder->create(
