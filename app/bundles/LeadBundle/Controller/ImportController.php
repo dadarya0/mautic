@@ -16,6 +16,7 @@ use Mautic\CoreBundle\Helper\CsvHelper;
 use Mautic\LeadBundle\Entity\Import;
 use Mautic\LeadBundle\Event\ImportInitEvent;
 use Mautic\LeadBundle\Event\ImportMappingEvent;
+use Mautic\LeadBundle\Event\ImportValidateEvent;
 use Mautic\LeadBundle\Form\Type\LeadImportFieldType;
 use Mautic\LeadBundle\Form\Type\LeadImportType;
 use Mautic\LeadBundle\Helper\Progress;
@@ -363,8 +364,16 @@ class ImportController extends FormController
                         }
                         break;
                     case self::STEP_MATCH_FIELDS:
-                        // Save matched fields
-                        $matchedFields = $form->getData();
+                        $validateEvent = $dispatcher->dispatch(
+                            LeadEvents::IMPORT_ON_VALIDATE,
+                            new ImportValidateEvent($this->request->get('object'), $form)
+                        );
+
+                        if ($validateEvent->hasErrors()) {
+                            break;
+                        }
+
+                        $matchedFields = $validateEvent->getMatchedFields();
 
                         if (empty($matchedFields)) {
                             $this->resetImport($object, $fullPath);
@@ -372,63 +381,24 @@ class ImportController extends FormController
                             return $this->newAction(0, true);
                         }
 
-                        $owner = $matchedFields['owner'];
-                        unset($matchedFields['owner']);
+                        /** @var \Mautic\LeadBundle\Entity\Import $import */
+                        $import = $importModel->getEntity();
 
-                        $list = null;
-                        if (array_key_exists('list', $matchedFields)) {
-                            $list = $matchedFields['list'];
-                            unset($matchedFields['list']);
-                        }
+                        $import->setMatchedFields($matchedFields)
+                            ->setObject($object)
+                            ->setDir($importDir)
+                            ->setLineCount($this->getLineCount($object))
+                            ->setFile($fileName)
+                            ->setOriginalFile($session->get('mautic.'.$object.'.import.original.file'))
+                            ->setDefault('owner', $validateEvent->getOwnerId())
+                            ->setDefault('list', $validateEvent->getList())
+                            ->setDefault('tags', $validateEvent->getTags())
+                            ->setHeaders($session->get('mautic.'.$object.'.import.headers'))
+                            ->setParserConfig($session->get('mautic.'.$object.'.import.config'));
 
-                        $tags = [];
-                        if (array_key_exists('tags', $matchedFields)) {
-                            $tagCollection = $matchedFields['tags'];
-                            $tags          = [];
-                            foreach ($tagCollection as $tag) {
-                                $tags[] = $tag->getTag();
-                            }
-                            unset($matchedFields['tags']);
-                        }
-
-                        foreach ($matchedFields as $k => $f) {
-                            if (empty($f)) {
-                                unset($matchedFields[$k]);
-                            } else {
-                                $matchedFields[$k] = trim($matchedFields[$k]);
-                            }
-                        }
-
-                        if (empty($matchedFields)) {
-                            $form->addError(
-                                new FormError(
-                                    $this->get('translator')->trans('mautic.lead.import.matchfields', [], 'validators')
-                                )
-                            );
-                        } else {
-                            $defaultOwner = ($owner) ? $owner->getId() : null;
-
-                            /** @var \Mautic\LeadBundle\Entity\Import $import */
-                            $import = $importModel->getEntity();
-
-                            $import->setMatchedFields($matchedFields)
-                                ->setObject($object)
-                                ->setDir($importDir)
-                                ->setLineCount($this->getLineCount($object))
-                                ->setFile($fileName)
-                                ->setOriginalFile($session->get('mautic.'.$object.'.import.original.file'))
-                                ->setDefault('owner', $defaultOwner)
-                                ->setDefault('list', $list)
-                                ->setDefault('tags', $tags)
-                                ->setHeaders($session->get('mautic.'.$object.'.import.headers'))
-                                ->setParserConfig($session->get('mautic.'.$object.'.import.config'));
-
-                            // In case the user chose to import in browser
-                            if ($this->importInBrowser($form, $object)) {
-                                $import->setStatus($import::MANUAL);
-
-                                $session->set('mautic.'.$object.'.import.step', self::STEP_PROGRESS_BAR);
-                            }
+                        // In case the user chose to import in browser
+                        if ($this->importInBrowser($form, $object)) {
+                            $import->setStatus($import::MANUAL);
 
                             $importModel->saveEntity($import);
 
