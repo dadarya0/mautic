@@ -61,6 +61,7 @@ class WidgetDetailEvent extends CommonEvent
      * We need to cast DateTime objects to strings to use them in the cache key.
      *
      * @param \DateTime|string $value
+     *
      * @return null|string
      */
     private function castDateTimeToString($value)
@@ -76,7 +77,7 @@ class WidgetDetailEvent extends CommonEvent
         }
 
         try {
-            $value = (string)$value;
+            $value = (string) $value;
         } catch (Exception $e) {
             return null;
         }
@@ -106,7 +107,10 @@ class WidgetDetailEvent extends CommonEvent
             }
         }
 
-        $cacheKey = substr(md5(implode('', $cacheKey)), 0, 16);
+        // If there is no additional parameters we return uniqueWidgetId as a cache key
+        // Otherwise we return hashed $cacheKey value
+        $cacheKey = (1 == count($cacheKey)) ? $this->getUniqueWidgetId() : substr(md5(implode('', $cacheKey)), 0, 16);
+
         return $this->cacheKeyPath . $cacheKey;
     }
 
