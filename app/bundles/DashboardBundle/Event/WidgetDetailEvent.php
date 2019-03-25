@@ -48,44 +48,6 @@ class WidgetDetailEvent extends CommonEvent
     }
 
     /**
-     * Checks for cache type. This event should be created by factory thus not legacy approach.
-     *
-     * @return bool
-     */
-    private function usesLegacyCache()
-    {
-        return is_null($this->cacheProvider);
-    }
-
-    /**
-     * We need to cast DateTime objects to strings to use them in the cache key.
-     *
-     * @param \DateTime|string $value
-     *
-     * @return null|string
-     */
-    private function castDateTimeToString($value)
-    {
-        if ($value instanceof \DateTime) {
-            // We use RFC 2822 format because it includes timezone
-            $value = $value->format('r');
-            if (false !== $value) {
-                return $value;
-            }
-
-            return null;
-        }
-
-        try {
-            $value = (string) $value;
-        } catch (Exception $e) {
-            return null;
-        }
-
-        return $value;
-    }
-
-    /**
      * Return unique key, uses legacy methods for BC.
      *
      * @return string
@@ -389,5 +351,43 @@ class WidgetDetailEvent extends CommonEvent
         }
 
         return $this->security->isGranted($permission);
+    }
+
+    /**
+     * Checks for cache type. This event should be created by factory thus not legacy approach.
+     *
+     * @return bool
+     */
+    private function usesLegacyCache()
+    {
+        return is_null($this->cacheProvider);
+    }
+
+    /**
+     * We need to cast DateTime objects to strings to use them in the cache key.
+     *
+     * @param \DateTime|string $value
+     *
+     * @return null|string
+     */
+    private function castDateTimeToString($value)
+    {
+        if ($value instanceof \DateTimeInterface) {
+            // We use RFC 2822 format because it includes timezone
+            $value = $value->format('r');
+            if (false !== $value) {
+                return $value;
+            }
+
+            return null;
+        }
+
+        try {
+            $value = (string) $value;
+        } catch (Exception $e) {
+            return null;
+        }
+
+        return $value;
     }
 }
