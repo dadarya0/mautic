@@ -64,9 +64,10 @@ class WidgetDetailEvent extends CommonEvent
         foreach (['dateTo', 'dateFrom'] as $key => $dateParameter) {
             if (isset($params[$dateParameter])) {
                 try {
-                    $date = $this->castDateTimeToString($params[$dateParameter]);
+                    $date       = $this->castDateTimeToString($params[$dateParameter]);
                     $cacheKey[] = $date;
-                } catch (CouldNotFormatDateTimeException $e) {}
+                } catch (CouldNotFormatDateTimeException $e) {
+                }
             }
         }
 
@@ -74,7 +75,7 @@ class WidgetDetailEvent extends CommonEvent
         // Otherwise we return hashed $cacheKey value
         $cacheKey = (1 == count($cacheKey)) ? $this->getUniqueWidgetId() : substr(md5(implode('', $cacheKey)), 0, 16);
 
-        return $this->cacheKeyPath . $cacheKey;
+        return $this->cacheKeyPath.$cacheKey;
     }
 
     /**
@@ -368,6 +369,7 @@ class WidgetDetailEvent extends CommonEvent
      * We need to cast DateTime objects to strings to use them in the cache key.
      *
      * @param \DateTimeInterface|mixed $value
+     *
      * @throws CouldNotFormatDateTimeException
      *
      * @return string
@@ -378,16 +380,16 @@ class WidgetDetailEvent extends CommonEvent
             // We use RFC 2822 format because it includes timezone
             $value = $value->format('r');
             if (false === $value) {
-                throw new CouldNotFormatDateTimeException;
+                throw new CouldNotFormatDateTimeException();
             }
 
             return $value;
         }
 
         try {
-            $value = (string)$value;
+            $value = (string) $value;
         } catch (Exception $e) {
-            throw new CouldNotFormatDateTimeException;
+            throw new CouldNotFormatDateTimeException();
         }
 
         return $value;
