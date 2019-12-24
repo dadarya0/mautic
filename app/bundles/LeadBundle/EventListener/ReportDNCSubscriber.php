@@ -21,6 +21,7 @@ use Mautic\ReportBundle\ReportEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use UnexpectedValueException;
 
 class ReportDNCSubscriber implements EventSubscriberInterface
 {
@@ -195,7 +196,7 @@ class ReportDNCSubscriber implements EventSubscriberInterface
      *
      * @return string
      *
-     * @throws \UnexpectedValueException
+     * @throws UnexpectedValueException
      */
     private function getDncReasonLabel($reasonId)
     {
@@ -203,6 +204,6 @@ class ReportDNCSubscriber implements EventSubscriberInterface
             return $this->getDncReasons()[$reasonId];
         }
 
-        throw new \UnexpectedValueException("There is no DNC reason with ID '{$reasonId}'");
+        throw new UnexpectedValueException("There is no DNC reason with ID '{$reasonId}'");
     }
 }

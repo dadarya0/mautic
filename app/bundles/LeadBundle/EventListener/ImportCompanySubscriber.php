@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Mautic\LeadBundle\EventListener;
 
-use Mautic\CoreBundle\EventListener\CommonSubscriber;
+use Exception;
 use Mautic\CoreBundle\Helper\ArrayHelper;
 use Mautic\CoreBundle\Security\Permissions\CorePermissions;
 use Mautic\LeadBundle\Entity\Tag;
@@ -27,21 +27,29 @@ use Mautic\LeadBundle\Model\CompanyModel;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Translation\TranslatorInterface;
 
-final class ImportCompanySubscriber implements EventSubscriberInterface
+class ImportCompanySubscriber implements EventSubscriberInterface
 {
     private FieldList $fieldList;
     private CorePermissions $corePermissions;
     private CompanyModel $companyModel;
 
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
     public function __construct(
         FieldList $fieldList,
         CorePermissions $corePermissions,
-        CompanyModel $companyModel
+        CompanyModel $companyModel,
+        TranslatorInterface $translator
     ) {
         $this->fieldList       = $fieldList;
         $this->corePermissions = $corePermissions;
         $this->companyModel    = $companyModel;
+        $this->translator      = $translator;
     }
 
     public static function getSubscribedEvents(): array
@@ -89,6 +97,9 @@ final class ImportCompanySubscriber implements EventSubscriberInterface
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function onImportProcess(ImportProcessEvent $event): void
     {
         if ($event->importIsForObject('company')) {
@@ -102,12 +113,9 @@ final class ImportCompanySubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param ImportValidateEvent
-     */
     public function onValidateImport(ImportValidateEvent $event)
     {
-        if ($event->importIsForRouteObject('companies') === false) {
+        if (false === $event->importIsForRouteObject('companies')) {
             return;
         }
 
@@ -135,8 +143,6 @@ final class ImportCompanySubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param array $matchedFields
-     *
      * @return ?int
      */
     private function handleValidateOwner(array &$matchedFields)
@@ -147,8 +153,6 @@ final class ImportCompanySubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param array $matchedFields
-     *
      * @return ?int
      */
     private function handleValidateList(array &$matchedFields)
@@ -157,8 +161,6 @@ final class ImportCompanySubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param array $matchedFields
-     *
      * @return array
      */
     private function handleValidateTags(array &$matchedFields)
@@ -179,9 +181,6 @@ final class ImportCompanySubscriber implements EventSubscriberInterface
      * Required fields come through as ['alias' => 'label'], and
      * $matchedFields is a zero indexed array, so to calculate the
      * diff, we must array_flip($matchedFields) and compare on key.
-     *
-     * @param ImportValidateEvent $event
-     * @param array               $matchedFields
      */
     private function handleValidateRequired(ImportValidateEvent $event, array &$matchedFields)
     {
@@ -200,7 +199,7 @@ final class ImportCompanySubscriber implements EventSubscriberInterface
                         'mautic.import.missing.required.fields',
                         [
                             '%requiredFields%' => implode(', ', $missingRequiredFields),
-                            '%fieldOrFields%'  => count($missingRequiredFields) === 1 ? 'field' : 'fields',
+                            '%fieldOrFields%'  => 1 === count($missingRequiredFields) ? 'field' : 'fields',
                         ],
                         'validators'
                     )
