@@ -14,6 +14,7 @@ use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Mautic\CoreBundle\Form\Type\FormButtonsType;
 
 class EmailTypeTest extends \PHPUnit\Framework\TestCase
 {
