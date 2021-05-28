@@ -551,13 +551,13 @@ class ImportModel extends FormModel
      *
      * @return array|null
      */
-    public function getFailedRows($importId = null, $object = 'lead')
+    public function getFailedRows($importId = null)
     {
         if (!$importId) {
             return null;
         }
 
-        return $this->getEventLogRepository()->getFailedRows($importId, ['select' => 'properties,id'], $object);
+        return $this->getEventLogRepository()->getFailedRows($importId, ['select' => 'properties,id']);
     }
 
     /**

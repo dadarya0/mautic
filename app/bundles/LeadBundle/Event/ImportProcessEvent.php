@@ -31,14 +31,35 @@ final class ImportProcessEvent extends Event
         $this->rowData  = $rowData;
     }
 
+    /**
+     * @return Import
+     */
+    public function getImport()
+    {
+        return $this->import;
+    }
+
+    /**
+     * @return LeadEventLog
+     */
+    public function getEventLog()
+    {
+        return $this->eventLog;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRowData()
+    {
+        return $this->rowData;
+    }
+
     public function setWasMerged(bool $wasMerged): void
     {
         $this->wasMerged = $wasMerged;
     }
 
-    /**
-     * @throws \UnexpectedValueException
-     */
     public function wasMerged(): bool
     {
         if (null === $this->wasMerged) {

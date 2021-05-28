@@ -49,8 +49,8 @@ final class ImportCompanySubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @throws AccessDeniedException
-     */
+    * @throws AccessDeniedException
+    */
     public function onImportInit(ImportInitEvent $event): void
     {
         if ($event->importIsForRouteObject('companies')) {
@@ -58,9 +58,9 @@ final class ImportCompanySubscriber implements EventSubscriberInterface
                 throw new AccessDeniedException('You do not have permission to import companies');
             }
 
-            $event->objectSingular = 'company';
-            $event->objectName     = 'mautic.lead.lead.companies';
-            $event->activeLink     = '#mautic_company_index';
+            $event->setObjectSingular('company');
+            $event->setObjectName('mautic.lead.lead.companies');
+            $event->setActiveLink('#mautic_company_index');
             $event->setIndexRoute('mautic_company_index');
             $event->stopPropagation();
         }
@@ -76,10 +76,10 @@ final class ImportCompanySubscriber implements EventSubscriberInterface
                 'modifiedByUser' => 'mautic.lead.import.label.modifiedByUser',
             ];
 
-            $event->fields = [
+            $event->setFields([
                 'mautic.lead.company'        => $this->fieldList->getFieldList(false, false, ['isPublished' => true, 'object' => 'company']),
                 'mautic.lead.special_fields' => $specialFields,
-            ];
+            ]);
         }
     }
 
@@ -87,9 +87,9 @@ final class ImportCompanySubscriber implements EventSubscriberInterface
     {
         if ($event->importIsForObject('company')) {
             $merged = $this->companyModel->import(
-                $event->import->getMatchedFields(),
-                $event->rowData,
-                $event->import->getDefault('owner')
+                $event->getImport()->getMatchedFields(),
+                $event->getRowData(),
+                $event->getImport()->getDefault('owner')
             );
             $event->setWasMerged((bool) $merged);
             $event->stopPropagation();

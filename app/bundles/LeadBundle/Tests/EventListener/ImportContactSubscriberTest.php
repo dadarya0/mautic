@@ -27,7 +27,7 @@ final class ImportContactSubscriberTest extends \PHPUnit\Framework\TestCase
         );
         $event = new ImportInitEvent('unicorn');
         $subscriber->onImportInit($event);
-        Assert::assertFalse($event->objectSupported);
+        Assert::assertFalse($event->getObjectSingular());
     }
 
     public function testOnImportInitForContactsObjectWithoutPermissions(): void

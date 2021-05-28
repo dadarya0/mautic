@@ -45,7 +45,7 @@ class ImportController extends FormController
     public function indexAction($page = 1)
     {
         $initEvent = $this->dispatchImportOnInit();
-        $this->get('session')->set('mautic.import.object', $initEvent->objectSingular);
+        $this->get('session')->set('mautic.import.object', $initEvent->getObjectSingular());
 
         return $this->indexStandard($page);
     }
@@ -111,7 +111,7 @@ class ImportController extends FormController
     public function cancelAction($objectId)
     {
         $initEvent   = $this->dispatchImportOnInit();
-        $object      = $initEvent->objectSingular;
+        $object      = $initEvent->getObjectSingular();
         $session     = $this->get('session');
         $fullPath    = $this->getFullCsvPath($object);
         $importModel = $this->getModel($this->getModelName());
@@ -138,7 +138,7 @@ class ImportController extends FormController
     public function queueAction($objectId)
     {
         $initEvent   = $this->dispatchImportOnInit();
-        $object      = $initEvent->objectSingular;
+        $object      = $initEvent->getObjectSingular();
         $session     = $this->get('session');
         $fullPath    = $this->getFullCsvPath($object);
         $importModel = $this->getModel($this->getModelName());
@@ -176,12 +176,12 @@ class ImportController extends FormController
             return $this->accessDenied();
         }
 
-        if (!$initEvent->objectSupported) {
+        if (!$initEvent->objectIsSupported()) {
             return $this->notFound();
         }
 
         $session = $this->get('session');
-        $object  = $initEvent->objectSingular;
+        $object  = $initEvent->getObjectSingular();
 
         $session->set('mautic.import.object', $object);
 
@@ -464,7 +464,7 @@ class ImportController extends FormController
             $contentTemplate = 'MauticLeadBundle:Import:new.html.php';
             $viewParameters  = [
                 'form'       => $form->createView(),
-                'objectName' => $initEvent->objectName,
+                'objectName' => $initEvent->getObjectName(),
             ];
         } else {
             $contentTemplate = 'MauticLeadBundle:Import:progress.html.php';
@@ -472,10 +472,10 @@ class ImportController extends FormController
                 'progress'         => $progress,
                 'import'           => $import,
                 'complete'         => $complete,
-                'failedRows'       => $importModel->getFailedRows($import->getId(), $import->getObject()),
-                'objectName'       => $initEvent->objectName,
-                'indexRoute'       => $initEvent->indexRoute,
-                'indexRouteParams' => $initEvent->indexRouteParams,
+                'failedRows'       => $importModel->getFailedRows($import->getId()),
+                'objectName'       => $initEvent->getObjectName(),
+                'indexRoute'       => $initEvent->getIndexRoute(),
+                'indexRouteParams' => $initEvent->getIndexRouteParams(),
             ];
         }
 
@@ -489,12 +489,12 @@ class ImportController extends FormController
                     'viewParameters'  => $viewParameters,
                     'contentTemplate' => $contentTemplate,
                     'passthroughVars' => [
-                        'activeLink'    => $initEvent->activeLink,
+                        'activeLink'    => $initEvent->getActiveLink(),
                         'mauticContent' => 'leadImport',
                         'route'         => $this->generateUrl(
                             'mautic_import_action',
                             [
-                                'object'       => $initEvent->routeObjectName,
+                                'object'       => $initEvent->getRouteObjectName(),
                                 'objectAction' => 'new',
                             ]
                         ),
@@ -657,7 +657,7 @@ class ImportController extends FormController
                 $args['viewParameters'] = array_merge(
                     $args['viewParameters'],
                     [
-                        'failedRows'        => $model->getFailedRows($entity->getId(), $entity->getObject()),
+                        'failedRows'        => $model->getFailedRows($entity->getId()),
                         'importedRowsChart' => $entity->getDateStarted() ? $model->getImportedRowsLineChartData(
                             'i',
                             $entity->getDateStarted(),
@@ -722,7 +722,7 @@ class ImportController extends FormController
     protected function getSessionBase($objectId = null)
     {
         $initEvent = $this->dispatchImportOnInit();
-        $object    = $initEvent->objectSingular;
+        $object    = $initEvent->getObjectSingular();
 
         return $object.'.import'.(($objectId) ? '.'.$objectId : '');
     }

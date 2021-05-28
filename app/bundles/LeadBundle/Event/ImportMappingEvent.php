@@ -27,16 +27,56 @@ final class ImportMappingEvent extends Event
     }
 
     /**
+     * @return string
+     */
+    public function getRouteObjectName()
+    {
+        return $this->routeObjectName;
+    }
+
+    /**
+     * @return bool
+     */
+    public function objectIsSupported()
+    {
+        return $this->objectSupported;
+    }
+
+    /**
+     * @param array $fields
+     */
+    public function setFields(array $fields)
+    {
+        $this->fields = $fields;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
      * Check if the import is for said route object and notes if the object exist.
      */
     public function importIsForRouteObject(string $routeObject): bool
     {
-        if ($this->routeObjectName === $routeObject) {
+        if ($this->getRouteObjectName() === $routeObject) {
             $this->objectSupported = true;
 
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * @param bool $objectSupported
+     */
+    public function setObjectIsSupported($objectSupported)
+    {
+        $this->objectSupported = $objectSupported;
     }
 }

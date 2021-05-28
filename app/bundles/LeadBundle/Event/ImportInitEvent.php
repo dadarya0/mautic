@@ -16,6 +16,7 @@ namespace Mautic\LeadBundle\Event;
 use Symfony\Contracts\EventDispatcher\Event;
 
 final class ImportInitEvent extends Event
+
 {
     public string $routeObjectName;
     public bool $objectSupported = false;
@@ -30,6 +31,70 @@ final class ImportInitEvent extends Event
         $this->routeObjectName = $routeObjectName;
     }
 
+    /**
+     * @return string
+     */
+    public function getRouteObjectName()
+    {
+        return $this->routeObjectName;
+    }
+
+    /**
+     * @return bool
+     */
+    public function objectIsSupported()
+    {
+        return $this->objectSupported;
+    }
+
+    /**
+     * @param string $objectSingular
+     */
+    public function setObjectSingular($objectSingular)
+    {
+        $this->objectSingular = $objectSingular;
+    }
+
+    /**
+     * @return string
+     */
+    public function getObjectSingular()
+    {
+        return $this->objectSingular;
+    }
+
+    /**
+     * @param string $objectName
+     */
+    public function setObjectName($objectName)
+    {
+        $this->objectName = $objectName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getObjectName()
+    {
+        return $this->objectName;
+    }
+
+    /**
+     * @param string $activeLink
+     */
+    public function setActiveLink($activeLink)
+    {
+        $this->activeLink = $activeLink;
+    }
+
+    /**
+     * @return string
+     */
+    public function getActiveLink()
+    {
+        return $this->activeLink;
+    }
+
     public function setIndexRoute(?string $indexRoute, array $routeParams = [])
     {
         $this->indexRoute       = $indexRoute;
@@ -37,16 +102,44 @@ final class ImportInitEvent extends Event
     }
 
     /**
+     * @return string
+     */
+    public function getIndexRoute()
+    {
+        return $this->indexRoute;
+    }
+
+    /**
+     * @return array
+     */
+    public function getIndexRouteParams()
+    {
+        return $this->indexRouteParams;
+    }
+
+    /**
      * Check if the import is for said route object and notes if the object exist.
+     *
+     * @param string $routeObject
+     *
+     * @return bool
      */
     public function importIsForRouteObject(string $routeObject): bool
     {
-        if ($this->routeObjectName === $routeObject) {
+        if ($this->getRouteObjectName() === $routeObject) {
             $this->objectSupported = true;
 
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * @param bool $objectSupported
+     */
+    public function setObjectIsSupported($objectSupported)
+    {
+        $this->objectSupported = $objectSupported;
     }
 }

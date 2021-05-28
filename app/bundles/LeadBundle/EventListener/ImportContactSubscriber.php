@@ -58,9 +58,9 @@ final class ImportContactSubscriber implements EventSubscriberInterface
                 throw new AccessDeniedException('You do not have permission to import contacts');
             }
 
-            $event->objectSingular = 'lead';
-            $event->objectName     = 'mautic.lead.leads';
-            $event->activeLink     = '#mautic_contact_index';
+            $event->setObjectSingular('lead');
+            $event->setObjectName('mautic.lead.leads');
+            $event->setActiveLink('#mautic_contact_index');
             $event->setIndexRoute('mautic_contact_index');
             $event->stopPropagation();
         }
@@ -74,7 +74,7 @@ final class ImportContactSubscriber implements EventSubscriberInterface
                 'createdByUser'  => 'mautic.lead.import.label.createdByUser',
                 'dateModified'   => 'mautic.lead.import.label.dateModified',
                 'modifiedByUser' => 'mautic.lead.import.label.modifiedByUser',
-                'lastActive'     => 'mautic.lead.import.label.lastActive',
+                'lastActive'     => 'mautic.lea d.import.label.lastActive',
                 'dateIdentified' => 'mautic.lead.import.label.dateIdentified',
                 'ip'             => 'mautic.lead.import.label.ip',
                 'points'         => 'mautic.lead.import.label.points',
@@ -83,26 +83,27 @@ final class ImportContactSubscriber implements EventSubscriberInterface
                 'ownerusername'  => 'mautic.lead.import.label.ownerusername',
             ];
 
-            $event->fields = [
+            $event->setFields([
                 'mautic.lead.contact'        => $this->fieldList->getFieldList(false, false),
                 'mautic.lead.company'        => $this->fieldList->getFieldList(false, false, ['isPublished' => true, 'object' => 'company']),
                 'mautic.lead.special_fields' => $specialFields,
-            ];
+            ]);
         }
     }
 
     public function onImportProcess(ImportProcessEvent $event): void
     {
         if ($event->importIsForObject('lead')) {
+            $import = $event->getImport();
             $merged = $this->contactModel->import(
-                $event->import->getMatchedFields(),
-                $event->rowData,
-                $event->import->getDefault('owner'),
-                $event->import->getDefault('list'),
-                $event->import->getDefault('tags'),
+                $import->getMatchedFields(),
+                $event->getRowData(),
+                $import->getDefault('owner'),
+                $import->getDefault('list'),
+                $import->getDefault('tags'),
                 true,
-                $event->eventLog,
-                (int) $event->import->getId()
+                $event->getEventLog(),
+                (int) $import->getId()
             );
             $event->setWasMerged((bool) $merged);
             $event->stopPropagation();
