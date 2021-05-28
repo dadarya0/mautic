@@ -508,6 +508,7 @@ return [
                     'mautic.lead.field.field_list',
                     'mautic.security',
                     'mautic.lead.model.lead',
+                    'translator',
                 ],
             ],
             'mautic.lead.import.company.subscriber' => [
@@ -516,6 +517,7 @@ return [
                     'mautic.lead.field.field_list',
                     'mautic.security',
                     'mautic.lead.model.company',
+                    'translator',
                 ],
             ],
             'mautic.lead.import.subscriber' => [
