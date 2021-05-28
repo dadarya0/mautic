@@ -658,7 +658,7 @@ return [
             ],
             'mautic.form.type.lead_field_import' => [
                 'class'     => \Mautic\LeadBundle\Form\Type\LeadImportFieldType::class,
-                'arguments' => ['translator', 'doctrine.orm.entity_manager'],
+                'arguments' => ['doctrine.orm.entity_manager', 'translator'],
             ],
             'mautic.form.type.lead_quickemail' => [
                 'class'     => \Mautic\LeadBundle\Form\Type\EmailType::class,
