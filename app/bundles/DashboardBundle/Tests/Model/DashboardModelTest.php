@@ -10,6 +10,7 @@ use Mautic\CoreBundle\Helper\PathsHelper;
 use Mautic\CoreBundle\Helper\UserHelper;
 use Mautic\CoreBundle\Security\Permissions\CorePermissions;
 use Mautic\CoreBundle\Translation\Translator;
+use Mautic\DashboardBundle\Event\WidgetDetailEventFactory;
 use Mautic\DashboardBundle\Model\DashboardModel;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -34,6 +35,11 @@ class DashboardModelTest extends TestCase
     private \PHPUnit\Framework\MockObject\MockObject $pathsHelper;
 
     /**
+     * @var WidgetDetailEventFactory
+     */
+    private $widgetDetailEventFactory;
+
+    /**
      * @var MockObject|Filesystem
      */
     private \PHPUnit\Framework\MockObject\MockObject $filesystem;
@@ -51,6 +57,7 @@ class DashboardModelTest extends TestCase
 
         $this->coreParametersHelper = $this->createMock(CoreParametersHelper::class);
         $this->pathsHelper          = $this->createMock(PathsHelper::class);
+        $this->widgetDetailEventFactory  = $this->createMock(WidgetDetailEventFactory::class);
         $this->filesystem           = $this->createMock(Filesystem::class);
         $this->session              = $this->createMock(Session::class);
         $requestStack               = $this->createMock(RequestStack::class);
@@ -60,6 +67,7 @@ class DashboardModelTest extends TestCase
         $this->model = new DashboardModel(
             $this->coreParametersHelper,
             $this->pathsHelper,
+            $this->widgetDetailEventFactory,
             $this->filesystem,
             $requestStack,
             $this->createMock(EntityManagerInterface::class),

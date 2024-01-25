@@ -5,6 +5,7 @@ namespace Mautic\DashboardBundle\Model;
 use Doctrine\ORM\EntityManagerInterface;
 use Mautic\CoreBundle\Helper\CacheStorageHelper;
 use Mautic\CoreBundle\Helper\CoreParametersHelper;
+use Mautic\CoreBundle\Helper\Filesystem;
 use Mautic\CoreBundle\Helper\InputHelper;
 use Mautic\CoreBundle\Helper\PathsHelper;
 use Mautic\CoreBundle\Helper\UserHelper;
@@ -32,6 +33,7 @@ class DashboardModel extends FormModel
         CoreParametersHelper $coreParametersHelper,
         private PathsHelper $pathsHelper,
         private WidgetDetailEventFactory $eventFactory,
+        private Filesystem $filesystem,
         private RequestStack $requestStack,
         EntityManagerInterface $em,
         CorePermissions $security,
