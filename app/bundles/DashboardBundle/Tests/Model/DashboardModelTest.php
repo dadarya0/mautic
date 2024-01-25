@@ -55,12 +55,12 @@ class DashboardModelTest extends TestCase
     {
         parent::setUp();
 
-        $this->coreParametersHelper = $this->createMock(CoreParametersHelper::class);
-        $this->pathsHelper          = $this->createMock(PathsHelper::class);
+        $this->coreParametersHelper      = $this->createMock(CoreParametersHelper::class);
+        $this->pathsHelper               = $this->createMock(PathsHelper::class);
         $this->widgetDetailEventFactory  = $this->createMock(WidgetDetailEventFactory::class);
-        $this->filesystem           = $this->createMock(Filesystem::class);
-        $this->session              = $this->createMock(Session::class);
-        $requestStack               = $this->createMock(RequestStack::class);
+        $this->filesystem                = $this->createMock(Filesystem::class);
+        $this->session                   = $this->createMock(Session::class);
+        $requestStack                    = $this->createMock(RequestStack::class);
         $requestStack->method('getSession')
             ->willReturn($this->session);
 
