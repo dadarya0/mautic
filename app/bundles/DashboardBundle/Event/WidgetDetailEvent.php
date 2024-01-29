@@ -202,6 +202,7 @@ class WidgetDetailEvent extends CommonEvent
                 $cache = new CacheStorageHelper(CacheStorageHelper::ADAPTOR_FILESYSTEM, $this->uniqueCacheDir, $this->cacheDir);
                 // must pass a DateTime object or a int of seconds to expire as 3rd attribute to set().
                 $expireTime = $this->widget->getCacheTimeout() * 60;
+
                 return $cache->set($this->getUniqueWidgetId(), $templateData, (int) $expireTime);
             }
 
@@ -370,9 +371,9 @@ class WidgetDetailEvent extends CommonEvent
      *
      * @param \DateTimeInterface|mixed $value
      *
-     * @throws CouldNotFormatDateTimeException
-     *
      * @return string
+     *
+     * @throws CouldNotFormatDateTimeException
      */
     private function castDateTimeToString($value)
     {

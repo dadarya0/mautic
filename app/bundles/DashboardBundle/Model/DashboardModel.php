@@ -20,6 +20,7 @@ use Mautic\DashboardBundle\Form\Type\WidgetType;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -206,7 +207,7 @@ class DashboardModel extends FormModel
 
         $widget->setParams($resultParams);
 
-        $event = $this->eventFactory->create($widget, $this->userHelper->getUser()->getId());
+        $event = $this->eventFactory->create($widget);
 
         $this->dispatcher->dispatch($event, DashboardEvents::DASHBOARD_ON_MODULE_DETAIL_GENERATE);
     }
