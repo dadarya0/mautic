@@ -7,7 +7,6 @@ namespace Mautic\EmailBundle\Tests\Form\Type;
 use Doctrine\ORM\EntityManager;
 use Mautic\CoreBundle\Helper\CoreParametersHelper;
 use Mautic\CoreBundle\Helper\ThemeHelperInterface;
-use Mautic\CoreBundle\Form\Type\FormButtonsType;
 use Mautic\EmailBundle\Entity\Email;
 use Mautic\EmailBundle\Form\Type\EmailType;
 use Mautic\StageBundle\Model\StageModel;
